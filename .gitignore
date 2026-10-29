@@ -1,0 +1,12 @@
+.env
+*.duckdb
+*.duckdb.wal
+.venv/
+__pycache__/
+.DS_Store
+logs/
+fred_dbt/target/
+fred_dbt/logs/
+fred_dbt/dbt_packages/
+.dagster_home/
+fred_dbt/.user.yml

@@ -1,0 +1,33 @@
+version: 2
+
+models:
+  - name: dim_series
+    description: "One row per FRED series, with title, units, and frequency."
+    columns:
+      - name: series_id
+        data_tests:
+          - unique
+          - not_null
+      - name: frequency
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Monthly', 'Quarterly']
+
+  - name: fct_economic_observations
+    description: "One row per series per date, with year-over-year change."
+    columns:
+      - name: observation_id
+        data_tests:
+          - unique
+          - not_null
+      - name: series_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_series')
+                field: series_id
+      - name: observation_date
+        data_tests:
+          - not_null

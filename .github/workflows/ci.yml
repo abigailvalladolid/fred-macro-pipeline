@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 14 * * *"  # 14:00 UTC = 10 AM Eastern (9 AM in winter)
+  workflow_dispatch:
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint Python
+        run: ruff check .
+
+      - name: Lint SQL
+        run: sqlfluff lint fred_dbt/models
+
+      - name: Parse dbt project
+        working-directory: fred_dbt
+        run: dbt parse
+
+      - name: Run full pipeline
+        run: dagster asset materialize --select "*" -m orchestration.definitions
+
+      - name: Export marts to CSV
+        run: |
+          mkdir -p exports
+          python - <<'EOF'
+          import duckdb
+          con = duckdb.connect("fred.duckdb")
+          tables = con.sql(
+              "SELECT table_name FROM information_schema.tables "
+              "WHERE table_schema = 'main_marts'"
+          ).fetchall()
+          for (name,) in tables:
+              con.sql(f"COPY main_marts.{name} TO 'exports/{name}.csv' (HEADER)")
+              print(f"Exported {name}")
+          con.close()
+          EOF
+
+      - name: Upload marts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fred-marts
+          path: exports/
+          retention-days: 14

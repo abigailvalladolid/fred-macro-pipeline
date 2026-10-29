@@ -1,0 +1,10 @@
+duckdb
+pandas
+requests
+python-dotenv
+dbt-duckdb==1.11.1
+dagster==1.13.27
+dagster-dbt==0.29.27
+dagster-webserver==1.13.27
+ruff==0.17.3
+sqlfluff==4.4.0
