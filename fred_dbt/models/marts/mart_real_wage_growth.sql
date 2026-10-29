@@ -5,6 +5,7 @@ with wages as (
     from {{ ref('fct_economic_observations') }}
     where series_id = 'CES0500000003'
 ),
+
 inflation as (
     select
         observation_date,
@@ -12,6 +13,7 @@ inflation as (
     from {{ ref('fct_economic_observations') }}
     where series_id = 'CPIAUCSL'
 )
+
 select
     w.observation_date,
     w.wage_growth_pct,

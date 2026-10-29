@@ -2,6 +2,7 @@ with obs as (
     select * from {{ ref('stg_fred__observations') }}
     where value is not null
 )
+
 select
     cur.series_id,
     cur.observation_date,

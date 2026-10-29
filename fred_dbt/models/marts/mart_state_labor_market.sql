@@ -5,6 +5,7 @@ with national as (
     from {{ ref('fct_economic_observations') }}
     where series_id = 'UNRATE'
 ),
+
 states as (
     select
         observation_date,
@@ -13,6 +14,7 @@ states as (
     from {{ ref('fct_economic_observations') }}
     where series_id like '__UR'
 )
+
 select
     s.state,
     s.observation_date,
