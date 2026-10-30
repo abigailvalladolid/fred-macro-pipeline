@@ -119,7 +119,7 @@ Open http://localhost:3000 (or whatever link it gives you) and click *Materializ
 
 
 
-## recap of hte project structure
+## recap of the project structure
 ```
 FRED-macro-pipeline/
 ├── ingestion/
